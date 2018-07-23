@@ -1,0 +1,10 @@
+{
+  "name": "axios-client",
+  "version": "0.1.0",
+  "description": "Extend Axios Library",
+  "main": "index.js",
+  "repository": "https://github.com/viveksingh0143/axios-client.git",
+  "author": "Vivek Kumar <viveksingh0143@gmail.com>",
+  "license": "MIT",
+  "private": false
+}
