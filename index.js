@@ -1,24 +1,31 @@
 import axios from "axios";
-/**
- * Create a new Axios client instance
-  */
 
-const { API_BASE } = process.env.API_BASE_URL;
-const getClient = (baseUrl = null) => {
-  if (baseUrl === null) {
-    baseUrl = API_BASE;
-  }
+const getClient = (requestInterceptor, responseInterceptor, baseUrl = null) => {
   const options = {
-    baseURL: baseUrl
+    baseURL: baseUrl,
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    }
   };
 
   const client = axios.create(options);
+  client.interceptors.request.use(requestInterceptor);
+  client.interceptors.response.use(responseInterceptor);
   return client;
 };
 
 class ApiClient {
-  constructor(baseUrl = null) {
+  constructor(requestInterceptor, responseInterceptor, baseUrl = null) {
     this.client = getClient(baseUrl);
+  }
+
+  setAuthorizationToken(token) {
+    if (token !== undefined && token !== null && token !== '') {
+      this.client.defaults.headers.common.Authorization = `Bearer ${token}`;
+    } else {
+      delete this.client.defaults.headers.common.Authorization;
+    }
   }
 
   get(url, conf = {}) {

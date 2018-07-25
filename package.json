@@ -1,10 +1,13 @@
 {
-  "name": "axios-client",
-  "version": "0.1.0",
-  "description": "Extend Axios Library",
+  "name": "@vamika-digital/axios-client",
+  "version": "0.4.0",
+  "description": "API class based on Axios Library",
   "main": "index.js",
   "repository": "https://github.com/viveksingh0143/axios-client.git",
   "author": "Vivek Kumar <viveksingh0143@gmail.com>",
   "license": "MIT",
-  "private": false
+  "private": false,
+  "dependencies": {
+    "axios": "^0.18.0"
+  }
 }
