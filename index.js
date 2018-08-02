@@ -23,7 +23,6 @@ AxiosClient.install = (Vue, options) => {
   };
 
   const client = axios.create(initOptions);
-  const client = axios.create(initOptions);
 
   client.interceptors.request.use(
     config => initOptions.reqHandleFunc(config),
