@@ -1,6 +1,6 @@
 {
   "name": "@vamika-digital/axios-client",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "description": "API class based on Axios Library",
   "main": "index.js",
   "repository": "https://github.com/viveksingh0143/axios-client.git",

@@ -1,135 +1,135 @@
 import axios from "axios";
 
-const getClient = (requestInterceptor, responseInterceptor, baseUrl = null) => {
-  const options = {
-    baseURL: baseUrl,
+const AxiosClient = {};
+
+AxiosClient.install = (Vue, options) => {
+  const defaultOptions = {
+    baseURL: '/',
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json'
-    }
+    },
+    // request interceptor handler
+    reqHandleFunc: config => config,
+    reqErrorFunc: error => Promise.reject(error),
+    // response interceptor handler
+    resHandleFunc: response => response,
+    resErrorFunc: error => Promise.reject(error)
   };
 
-  const client = axios.create(options);
-  client.interceptors.request.use(requestInterceptor);
-  client.interceptors.response.use(responseInterceptor);
-  return client;
-};
+  const initOptions = {
+    ...defaultOptions,
+    ...options
+  };
 
-class ApiClient {
-  constructor(requestInterceptor, responseInterceptor, baseUrl = null) {
-    this.client = getClient(baseUrl);
-  }
+  const client = axios.create(initOptions);
+  const client = axios.create(initOptions);
 
-  setAuthorizationToken(token) {
-    if (token !== undefined && token !== null && token !== '') {
-      this.client.defaults.headers.common.Authorization = `Bearer ${token}`;
-    } else {
-      delete this.client.defaults.headers.common.Authorization;
+  client.interceptors.request.use(
+    config => initOptions.reqHandleFunc(config),
+    error => initOptions.reqErrorFunc(error)
+  );
+  // Add a response interceptor
+  client.interceptors.response.use(
+    response => initOptions.resHandleFunc(response),
+    error => initOptions.resErrorFunc(error)
+  );
+
+  Vue.prototype.$axios = client;
+  Vue.prototype.$http = {
+    get: (url, data, options = {}) => {
+      let axiosOpt = {
+        ...options,
+        ...{
+          method: 'get',
+          url: url,
+          params: data
+        }
+      }
+      return client(axiosOpt);
+    },
+
+    post: (url, data = {}, options = {}) => {
+      let axiosOpt = {
+        ...options,
+        ...{
+          method: 'post',
+          url: url,
+          data: data
+        }
+      }
+      return client(axiosOpt);
+    },
+
+    head(url, data = {}, options = {}) {
+      let axiosOpt = {
+        ...options,
+        ...{
+          method: 'head',
+          url: url,
+          params: data
+        }
+      }
+      return client(axiosOpt);
+    },
+
+    options(url, data = {}, options = {}) {
+      let axiosOpt = {
+        ...options,
+        ...{
+          method: 'options',
+          url: url,
+          params: data
+        }
+      }
+      return client(axiosOpt);
+    },
+
+    delete(url, data, options = {}) {
+      let axiosOpt = {
+        ...options,
+        ...{
+          method: 'delete',
+          url: url,
+          params: data
+        }
+      }
+      return client(axiosOpt);
+    },
+
+    put(url, data = {}, conf = {}) {
+      let axiosOpt = {
+        ...options,
+        ...{
+          method: 'put',
+          url: url,
+          data: data
+        }
+      }
+      return client(axiosOpt);
+    },
+
+    patch(url, data = {}, conf = {}) {
+      let axiosOpt = {
+        ...options,
+        ...{
+          method: 'patch',
+          url: url,
+          data: data
+        }
+      }
+      return client(axiosOpt);
     }
-  }
-
-  get(url, conf = {}) {
-    return this.client
-      .get(url, conf)
-      .then(response => Promise.resolve(response))
-      .catch(error => Promise.reject(error));
-  }
-
-  delete(url, conf = {}) {
-    return this.client
-      .delete(url, conf)
-      .then(response => Promise.resolve(response))
-      .catch(error => Promise.reject(error));
-  }
-
-  head(url, conf = {}) {
-    return this.client
-      .head(url, conf)
-      .then(response => Promise.resolve(response))
-      .catch(error => Promise.reject(error));
-  }
-
-  options(url, conf = {}) {
-    return this.client
-      .options(url, conf)
-      .then(response => Promise.resolve(response))
-      .catch(error => Promise.reject(error));
-  }
-
-  post(url, data = {}, conf = {}) {
-    return this.client
-      .post(url, data, conf)
-      .then(response => Promise.resolve(response))
-      .catch(error => Promise.reject(error));
-  }
-
-  put(url, data = {}, conf = {}) {
-    return this.client
-      .put(url, data, conf)
-      .then(response => Promise.resolve(response))
-      .catch(error => Promise.reject(error));
-  }
-
-  patch(url, data = {}, conf = {}) {
-    return this.client
-      .patch(url, data, conf)
-      .then(response => Promise.resolve(response))
-      .catch(error => Promise.reject(error));
-  }
+  };
 }
 
-export { ApiClient };
-
-/**
- * Base HTTP Client
- */
-export default {
-  get(url, conf = {}) {
-    return getClient()
-      .get(url, conf)
-      .then(response => Promise.resolve(response))
-      .catch(error => Promise.reject(error));
-  },
-
-  delete(url, conf = {}) {
-    return getClient()
-      .delete(url, conf)
-      .then(response => Promise.resolve(response))
-      .catch(error => Promise.reject(error));
-  },
-
-  head(url, conf = {}) {
-    return getClient()
-      .head(url, conf)
-      .then(response => Promise.resolve(response))
-      .catch(error => Promise.reject(error));
-  },
-
-  options(url, conf = {}) {
-    return getClient()
-      .options(url, conf)
-      .then(response => Promise.resolve(response))
-      .catch(error => Promise.reject(error));
-  },
-
-  post(url, data = {}, conf = {}) {
-    return getClient()
-      .post(url, data, conf)
-      .then(response => Promise.resolve(response))
-      .catch(error => Promise.reject(error));
-  },
-
-  put(url, data = {}, conf = {}) {
-    return getClient()
-      .put(url, data, conf)
-      .then(response => Promise.resolve(response))
-      .catch(error => Promise.reject(error));
-  },
-
-  patch(url, data = {}, conf = {}) {
-    return getClient()
-      .patch(url, data, conf)
-      .then(response => Promise.resolve(response))
-      .catch(error => Promise.reject(error));
-  }
-};
+let GlobalVue = null
+if (typeof window !== 'undefined') {
+  GlobalVue = window.Vue
+} else if (typeof global !== 'undefined') {
+  GlobalVue = global.Vue
+}
+if (GlobalVue) {
+  GlobalVue.use(AxiosClient)
+}
+export default AxiosClient;
